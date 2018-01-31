@@ -180,6 +180,9 @@ def _get_processor(v):
     return _DenseResourceVariableProcessor(v)
   if isinstance(v, variables.Variable):
     return _RefVariableProcessor(v)
+  # add by hyx to get gradient of placeholder, not used when training
+  if v.op.type == "Placeholder":
+    return _StreamingModelPortProcessor(v)
   if v.op.type == "SubmodelPort":
     return _StreamingModelPortProcessor(v)
   raise NotImplementedError("Trying to optimize unsupported type ", v)
